@@ -1,14 +1,32 @@
 #include <linux/module.h>
+#include <linux/fs.h>
+
+static struct file_system_type pext_fs_type = {
+	.owner = THIS_MODULE,
+	.name = "pext",
+	.fs_flags = FS_REQUIRES_DEV,
+};
 
 static int __init init_pext_fs(void)
 {
-	printk(KERN_INFO"Hello pext fs\n");
-	return 0;
+	int ret;
+
+	ret = register_filesystem(&pext_fs_type);
+
+	if (!ret)
+		printk(KERN_INFO"pext file system is registered\n");
+
+	return ret;
 }
 
 static void __exit exit_pext_fs(void)
 {
-	printk(KERN_INFO"Bye pext fs\n");
+	int ret;
+
+	ret = unregister_filesystem(&pext_fs_type);
+
+	if (!ret)
+		printk(KERN_INFO"pext file system is unregistered\n");
 }
 
 MODULE_AUTHOR("Seunghun Lee");
