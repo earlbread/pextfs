@@ -1,9 +1,22 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 
+static int pext_fill_super(struct super_block *sb, void *data, int silent)
+{
+	return -1;
+}
+
+static struct dentry *pext_mount(struct file_system_type *fs_type,
+		int flags, const char *dev_name, void *data)
+{
+	return mount_bdev(fs_type, flags, dev_name, data, pext_fill_super);
+}
+
 static struct file_system_type pext_fs_type = {
 	.owner = THIS_MODULE,
 	.name = "pext",
+	.mount = pext_mount,
+	.kill_sb = kill_block_super,
 	.fs_flags = FS_REQUIRES_DEV,
 };
 
